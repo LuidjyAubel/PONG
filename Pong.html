@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <script>
+    // ---------------------------------------------- //
+    //              Variable Globale                  //
+    // ---------------------------------------------- //
+    var VK_UP = 38, VK_DOWN = 40, VK_Z = 90, VK_S = 83;
+    var canvas1 = null;
+    var ctx1 = null;
+    var timer1 = null;
+    var UpIsOn = false;
+            var DownIsOn = false;
+            var ZIsOn = false;
+            var SIsOn = false;
+
+
+    // ---------------------------------------------- //
+        function init ()
+        {
+            //  
+            // Initialiser les donnés du programme
+            // Appelé 1 seule fois au début du prog (onload)
+            // ----------------------------------------------//
+             canvas1 = document.getElementById('canvas');
+             ctx1 = canvas1.getContext('2d');
+
+             document.onkeydown = body_OnKeyDown;
+             document.onkeyup = body_OnKeyUp;
+         
+            //itererClavier();
+             start();
+            // ctx1.fillStyle = 'green';
+            // ctx1.fillRect(10, 10, 100, 100);
+            // document.title = canvas1.width;
+            // document.title = ctx1.canvas.width;
+        } // ---------------------------------------------- //
+        function start()
+        { 
+            if (timer1 == null)
+            timer1 = setInterval('DrawFrame()', 1000/50); // timer
+        }
+
+        function stop()
+        {
+            
+            if (timer1 != null)
+            {
+                clearInterval(timer1);
+                timer1=null; // est arrété
+            }
+
+        }
+        function effacer()
+        {
+            // 
+            // Effacer le canvas couleur blanche
+            // 
+            ctx1.fillStyle = 'red';
+            ctx1.fillRect(0, 0, ctx1.canvas.width, ctx1.canvas.height);
+        }
+        function cercle(x,y,r)
+        {     
+             ctx1.beginPath();
+             ctx1.arc(x, y, r, 0, 2 * Math.PI, false);
+             ctx1.fillStyle = 'black'; // Remplissage
+             ctx1.fill();               // Tracer Remplissage
+             ctx1.lineWidth = 1;
+             ctx1.strokeStyle = 'red';
+             ctx1.stroke(); // Tracer contour
+        }
+            // 
+            // Dessiner une bille
+            let bille = new Object();
+            bille.PosX = 100;
+            bille.PosY = 100;
+            bille.VitX = 4;
+            bille.VitY = 4;
+            bille.actif = true;
+            //
+            // Dessiner une raquette
+            let raquette1 = new Object();
+            raquette1.PosX = 10;
+            raquette1.PosY = 10;
+            raquette1.VitX = 0;
+            raquette1.VitY = 0;
+            raquette1.sizeX = 10;
+            raquette1.sizeY = 70;
+
+            let raquette2 = new Object();
+            raquette2.PosX = 380;
+            raquette2.PosY = 10;
+            raquette2.VitX = 0;
+            raquette2.VitY = 0;
+            raquette2.sizeX = 10;
+            raquette2.sizeY = 70;
+
+        function square(x,y, l, h)
+        {
+            ctx1.fillStyle = 'black';
+            ctx1.fillRect(x, y, l, h);
+        }
+        var cptFrames = 0;
+        function DrawFrame()
+        {
+            //  
+            // Retracer l'image courante du monde
+            // Appelé 50 fois par seconde
+            // ----------------------------------------------//
+            cptFrames++ ;
+            // document.title = cptFrames;
+            //-- Mettre à jour les objets
+            bille.PosX = bille.PosX+bille.VitX;
+            bille.PosY = bille.PosY+bille.VitY;
+            //Detecter la sortie du cadre
+            if (bille.PosX >= canvas1.width)bille.actif = false ; // provisoire
+            if (bille.PosY >= canvas1.height) bille.VitY = -bille.VitY;
+
+
+            if (bille.PosX <= 0) bille.actif = false;
+            if (bille.PosY <= 0) bille.VitY = -bille.VitY;
+
+            //Detecter la collision avec la raquette
+            if (bille.PosX >= raquette1.PosX && bille.PosX <= raquette1.PosX+10 && bille.PosY >= raquette1.PosY && bille.PosY <= raquette1.PosY+70)
+            {
+                bille.VitX = -bille.VitX;
+            }
+            //Detecter la collision avec la raquette2
+            if (bille.PosX >= raquette2.PosX && bille.PosX <= raquette2.PosX+10 && bille.PosY >= raquette2.PosY && bille.PosY <= raquette2.PosY+70 )
+            {
+                bille.VitX = -bille.VitX;
+            }
+            
+            if ((bille.actif == false) && (bille.PosX <= 0))
+            {
+                ctx1.font = '48px serif';
+                ctx1.fillText(' le jouer 1 à Perdu', 10, 150);
+                return;
+            }else if ((bille.actif == false) && (bille.PosX >= 380))
+            {
+                ctx1.font = '48px serif';
+                ctx1.fillText(' le jouer 2 à Perdu', 10, 150);
+                return;
+            }
+
+            //-- Afficher les objets
+            effacer();
+            cercle(bille.PosX, bille.PosY, 5); // Afficher la bille
+            square(raquette1.PosX, raquette1.PosY, raquette1.sizeX, raquette1.sizeY); // Afficher le rectangle 1
+            square(raquette2.PosX, raquette2.PosY,  raquette2.sizeX,raquette2.sizeY); // Afficher le rectangle 2
+            itererClavier();
+        }// ----------------------------------------------//
+        function body_OnKeyDown(event){
+
+switch(event.keyCode)
+{
+case VK_UP:  UpIsOn = true ; document.title = VK_UP; break;
+case VK_DOWN: DownIsOn = true; document.title = VK_DOWN ;break;
+case VK_Z: ZIsOn = true; document.title = VK_Z ;break;
+case VK_S: SIsOn = true; document.title = VK_S ;break;
+}
+
+/*if(  raquette1.posX < 5   )	raquette1.posX = 5 ;
+if(  (raquette1.posX+raquette1.sizeX) > 400-5 )
+raquette1.posX = 400-5-raquette1.sizeX ;*/
+}
+function body_OnKeyUp(event){
+
+switch(event.keyCode)
+{
+case VK_UP:  UpIsOn  = false ;    break;
+
+case VK_DOWN: DownIsOn = false ;   break;
+case VK_Z: ZIsOn = false ;   break;
+case VK_S: SIsOn = false ;   break;
+}
+
+}
+
+function itererClavier(){
+if(ZIsOn) {raquette1.PosY=raquette1.PosY -3;}
+if(SIsOn) {raquette1.PosY=raquette1.PosY + 3;}
+
+if(UpIsOn) raquette2.PosY=raquette2.PosY -3;
+if(DownIsOn) raquette2.PosY=raquette2.PosY + 3;
+
+
+//Detecter la sortie du cadre de la raquette 1
+if (raquette1.PosY <= 5) raquette1.PosY = 5;
+if (raquette1.PosY >= canvas1.height-raquette1.sizeY-5) raquette1.PosY = canvas1.height-raquette1.sizeY -5;
+
+if (raquette2.PosY <= 5) raquette2.PosY = 5;
+if (raquette2.PosY >= canvas1.height-raquette2.sizeY-5) raquette2.PosY = canvas1.height-raquette2.sizeY -5;
+}
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pong</title>
+</head>
+<body onload="init()">
+    <h1>Pong</h1><hr>
+
+    <canvas id="canvas"
+            width="400" height="300"
+            style="border:solid 1px red">
+        
+    </canvas>
+   <!-- <button onclick="stop()">Arreter le script (dev feacture)</button>-->
+</body>
+</html>
